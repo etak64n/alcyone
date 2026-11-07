@@ -6,6 +6,7 @@
 import {
   hasText,
   isBoxItem,
+  MAX_PEN_NUMBERS,
   MIN_SIZE,
   type ArrowKind,
   type BoxItem,
@@ -777,8 +778,9 @@ export class Editor {
       case "draw": {
         const points = interaction.points;
         const last = { x: points.at(-2) ?? point.x, y: points.at(-1) ?? point.y };
-        // Points closer than a pixel or two on the screen add nothing to the stroke.
-        if (distance(last, point) * this.camera.zoom >= 2) {
+        // Points closer than a pixel or two on the screen add nothing to the stroke. A stroke
+        // stops growing at the most points that a board takes.
+        if (distance(last, point) * this.camera.zoom >= 2 && points.length + 2 <= MAX_PEN_NUMBERS) {
           this.interaction = { ...interaction, points: [...points, round(point.x), round(point.y)] };
         }
         break;

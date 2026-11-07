@@ -3,7 +3,7 @@
 // applies the batches in the order in which they arrive and sends each one to everyone
 // on the board, the sender included, which learns that way that its batch arrived.
 
-import { BoardError, ID_PATTERN, MAX_COORDINATE, readItem, readOps, type Item, type Op } from "./board.ts";
+import { BoardError, ID_PATTERN, MAX_COORDINATE, readItem, type Item, type Op } from "./board.ts";
 
 /** A point on the board, in board units. */
 export interface Point {
@@ -55,6 +55,16 @@ export type ClientMessage =
   | { type: "ops"; batch: string; ops: Op[] }
   | { type: "presence"; presence: Presence };
 
+/**
+ * A message from a browser as the room first reads it: the form of the message, with the
+ * operations and the presence still to check. A wrong operation refuses its batch, and a
+ * wrong presence is dropped, but the connection stays: a browser sends its waiting batches
+ * again on a new connection, so a closed one would only fail again.
+ */
+export type IncomingMessage =
+  | { type: "ops"; batch: string; ops: unknown[] }
+  | { type: "presence"; presence: unknown };
+
 export type ServerMessage =
   /** The first message on a connection: the board as it is, and who else is on it. */
   | { type: "welcome"; board: BoardInfo; you: Peer; peers: PeerState[]; items: Item[]; seq: number }
@@ -82,8 +92,8 @@ const BATCH_PATTERN = /^[0-9a-z]{1,32}$/;
 
 export const EMPTY_PRESENCE: Presence = { cursor: null, selection: [], drag: null, ghosts: [] };
 
-/** Reads a message from a browser, and throws a BoardError when it is not one. */
-export function readClientMessage(text: string): ClientMessage {
+/** Reads the form of a message from a browser, and throws a BoardError when it is not one. */
+export function readClientMessage(text: string): IncomingMessage {
   if (text.length > MAX_MESSAGE_LENGTH) throw new BoardError(`A message may hold at most ${MAX_MESSAGE_LENGTH} characters.`);
   let value: unknown;
   try {
@@ -97,16 +107,19 @@ export function readClientMessage(text: string): ClientMessage {
     case "ops": {
       const batch = fields["batch"];
       if (typeof batch !== "string" || !BATCH_PATTERN.test(batch)) throw new BoardError("batch must be 1 to 32 digits and lowercase letters.");
-      return { type: "ops", batch, ops: readOps(fields["ops"]) };
+      const ops = fields["ops"];
+      if (!Array.isArray(ops)) throw new BoardError("ops must be a list.");
+      return { type: "ops", batch, ops };
     }
     case "presence":
-      return { type: "presence", presence: readPresence(fields["presence"]) };
+      return { type: "presence", presence: fields["presence"] };
     default:
       throw new BoardError(`A message has an unknown type: ${String(fields["type"])}.`);
   }
 }
 
-function readPresence(value: unknown): Presence {
+/** Reads a presence, and throws a BoardError when it is not one. */
+export function readPresence(value: unknown): Presence {
   if (typeof value !== "object" || value === null || Array.isArray(value)) throw new BoardError("presence must be an object.");
   const fields = value as Record<string, unknown>;
   const cursor = fields["cursor"] === null ? null : readPoint(fields["cursor"]);

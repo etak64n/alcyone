@@ -9,7 +9,7 @@
 // wakes up. A save empties the journal up to the batches that it includes.
 
 import { DurableObject } from "cloudflare:workers";
-import { BoardError, sortedItems, type Op } from "../shared/board.ts";
+import { BoardError, readOps, sortedItems, type Op } from "../shared/board.ts";
 import { randomId } from "../shared/ids.ts";
 import {
   CLOSE_BAD_MESSAGE,
@@ -18,7 +18,8 @@ import {
   peerColor,
   peerName,
   readClientMessage,
-  type ClientMessage,
+  readPresence,
+  type IncomingMessage,
   type Peer,
   type PeerState,
   type Presence,
@@ -98,7 +99,7 @@ export class BoardRoom extends DurableObject<Env> implements RoomRpc {
       ws.close(CLOSE_BAD_MESSAGE, "Messages must be text.");
       return;
     }
-    let parsed: ClientMessage;
+    let parsed: IncomingMessage;
     try {
       parsed = readClientMessage(message);
     } catch (error) {
@@ -106,8 +107,15 @@ export class BoardRoom extends DurableObject<Env> implements RoomRpc {
       return;
     }
     if (parsed.type === "presence") {
-      this.#presence.set(peer.session, parsed.presence);
-      this.#broadcast({ type: "presence", session: peer.session, presence: parsed.presence }, ws);
+      let presence: Presence;
+      try {
+        presence = readPresence(parsed.presence);
+      } catch {
+        // Where someone points matters only for a moment, so a presence that the room cannot read is dropped.
+        return;
+      }
+      this.#presence.set(peer.session, presence);
+      this.#broadcast({ type: "presence", session: peer.session, presence }, ws);
       return;
     }
 
@@ -118,7 +126,7 @@ export class BoardRoom extends DurableObject<Env> implements RoomRpc {
     const room = await this.#load();
     let applied: ReturnType<Room["apply"]>;
     try {
-      applied = room.apply(parsed.ops);
+      applied = room.apply(readOps(parsed.ops));
     } catch (error) {
       if (!(error instanceof BoardError)) throw error;
       send(ws, { type: "rejected", batch: parsed.batch, message: error.message });

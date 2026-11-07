@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { BoardError } from "../shared/board.ts";
-import { EMPTY_PRESENCE, MAX_MESSAGE_LENGTH, peerColor, peerName, readClientMessage } from "../shared/protocol.ts";
+import { EMPTY_PRESENCE, MAX_MESSAGE_LENGTH, peerColor, peerName, readClientMessage, readPresence } from "../shared/protocol.ts";
 
 describe("readClientMessage", () => {
   it("reads a batch of operations", () => {
@@ -11,14 +11,17 @@ describe("readClientMessage", () => {
   it("reads a presence", () => {
     const presence = { cursor: { x: 1, y: 2 }, selection: ["aaaaaaaaaaaaaaaa"], drag: { ids: ["aaaaaaaaaaaaaaaa"], dx: 3, dy: 4 }, ghosts: [] };
     expect(readClientMessage(JSON.stringify({ type: "presence", presence }))).toEqual({ type: "presence", presence });
-    expect(readClientMessage(JSON.stringify({ type: "presence", presence: EMPTY_PRESENCE }))).toEqual({ type: "presence", presence: EMPTY_PRESENCE });
+    expect(readPresence(presence)).toEqual(presence);
+    expect(readPresence(EMPTY_PRESENCE)).toEqual(EMPTY_PRESENCE);
+    expect(() => readPresence({ ...EMPTY_PRESENCE, selection: ["x"] })).toThrow(/IDs/);
   });
 
-  it("refuses what is not a message", () => {
+  it("refuses what is not a message, and leaves the operations to the room", () => {
     expect(() => readClientMessage("not json")).toThrow(BoardError);
     expect(() => readClientMessage(JSON.stringify({ type: "shout" }))).toThrow(/unknown type/);
     expect(() => readClientMessage(JSON.stringify({ type: "ops", batch: "B!", ops: [] }))).toThrow(/batch/);
-    expect(() => readClientMessage(JSON.stringify({ type: "presence", presence: { ...EMPTY_PRESENCE, selection: ["x"] } }))).toThrow(/IDs/);
+    expect(() => readClientMessage(JSON.stringify({ type: "ops", batch: "b1", ops: "all" }))).toThrow(/list/);
+    expect(readClientMessage(JSON.stringify({ type: "ops", batch: "b1", ops: [{ op: "explode" }] }))).toMatchObject({ ops: [{ op: "explode" }] });
     expect(() => readClientMessage("x".repeat(MAX_MESSAGE_LENGTH + 1))).toThrow(/at most/);
   });
 });

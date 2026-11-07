@@ -96,6 +96,23 @@ describe("BoardRoom", () => {
     expect(state.database.prepare("SELECT seq FROM journal").all()).toEqual([]);
   });
 
+  it("refuses a batch with an operation of an unknown kind, and keeps the connection", async () => {
+    const { room, state } = setup();
+    const ada = await connect(room, state, "ada@example.com");
+    await room.webSocketMessage(ada as unknown as WebSocket, JSON.stringify({ type: "ops", batch: "b9", ops: [{ op: "explode" }] }));
+    expect(ada.last("rejected")).toMatchObject({ batch: "b9" });
+    expect(ada.closed).toBeNull();
+  });
+
+  it("drops a presence that it cannot read, and keeps the connection", async () => {
+    const { room, state } = setup();
+    const ada = await connect(room, state, "ada@example.com");
+    const bob = await connect(room, state, "bob@example.com");
+    await room.webSocketMessage(ada as unknown as WebSocket, JSON.stringify({ type: "presence", presence: { cursor: "here" } }));
+    expect(bob.messages("presence")).toHaveLength(0);
+    expect(ada.closed).toBeNull();
+  });
+
   it("acknowledges a batch that changes nothing, to its sender alone", async () => {
     const { room, state } = setup();
     const ada = await connect(room, state, "ada@example.com");

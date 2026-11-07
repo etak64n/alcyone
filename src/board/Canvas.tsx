@@ -79,6 +79,9 @@ export function Canvas({ editor }: { editor: Editor }) {
       className="absolute inset-0 size-full touch-none select-none"
       style={{ cursor, background: PAPER }}
       onPointerDown={(event) => {
+        // The board keeps the focus where it is: the text field of a note that this press
+        // creates must not lose it to the board, and a drag selects no text of the page.
+        event.preventDefault();
         event.currentTarget.setPointerCapture(event.pointerId);
         editor.pointerDown(input(event));
       }}
