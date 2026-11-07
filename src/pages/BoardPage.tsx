@@ -52,6 +52,11 @@ export function BoardPage({ id }: { id: string }) {
     return () => editor.stop();
   }, [editor]);
 
+  // A board that does not exist has no room to connect to.
+  useEffect(() => {
+    if (missing) editor.stop();
+  }, [editor, missing]);
+
   useEffect(() => {
     api
       .getBoard(id)
