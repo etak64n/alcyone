@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 380" width="1000" height="380" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#57606a"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1000" height="380" rx="16" fill="#ffffff"/>
+
+  <!-- The Cloudflare account -->
+  <rect x="210" y="24" width="570" height="332" rx="12" fill="none" stroke="#f38020" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <text x="226" y="48" font-size="13" font-weight="600" fill="#c25f0a">Your Cloudflare account</text>
+
+  <!-- Boxes -->
+  <g font-size="15" text-anchor="middle">
+    <rect x="24" y="150" width="150" height="80" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+    <text x="99" y="185" font-weight="700" fill="#1f2328">Browsers</text>
+    <text x="99" y="207" font-size="12" fill="#57606a">pages, API, WebSockets</text>
+
+    <rect x="232" y="150" width="140" height="80" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+    <text x="302" y="185" font-weight="700" fill="#1f2328">Access</text>
+    <text x="302" y="207" font-size="12" fill="#57606a">sign-in of the people</text>
+
+    <rect x="404" y="150" width="140" height="80" rx="10" fill="#eef3fe" stroke="#2f63e0"/>
+    <text x="474" y="185" font-weight="700" fill="#1f2328">Worker</text>
+    <text x="474" y="207" font-size="12" fill="#57606a">pages and API</text>
+
+    <rect x="590" y="66" width="168" height="80" rx="10" fill="#eef3fe" stroke="#2f63e0"/>
+    <text x="674" y="101" font-weight="700" fill="#1f2328">BoardRoom</text>
+    <text x="674" y="123" font-size="12" fill="#57606a">one for each board</text>
+
+    <rect x="590" y="234" width="168" height="80" rx="10" fill="#eef3fe" stroke="#2f63e0"/>
+    <text x="674" y="269" font-weight="700" fill="#1f2328">BoardDirectory</text>
+    <text x="674" y="291" font-size="12" fill="#57606a">the list of boards</text>
+
+    <rect x="816" y="150" width="160" height="80" rx="10" fill="#f6f8fa" stroke="#d0d7de"/>
+    <text x="896" y="185" font-weight="700" fill="#1f2328">Bucket</text>
+    <text x="896" y="207" font-size="12" fill="#57606a">boards and images</text>
+  </g>
+
+  <!-- Arrows -->
+  <g stroke="#57606a" stroke-width="1.5" fill="none" marker-end="url(#arrow)">
+    <line x1="174" y1="190" x2="228" y2="190"/>
+    <line x1="372" y1="190" x2="400" y2="190"/>
+    <line x1="544" y1="174" x2="586" y2="128"/>
+    <line x1="544" y1="206" x2="586" y2="252"/>
+    <line x1="544" y1="190" x2="812" y2="190"/>
+    <line x1="758" y1="128" x2="812" y2="172"/>
+    <line x1="758" y1="252" x2="812" y2="208"/>
+  </g>
+  <g font-size="11" fill="#57606a" text-anchor="middle">
+    <text x="676" y="183">images</text>
+    <text x="566" y="140">WebSocket</text>
+  </g>
+</svg>

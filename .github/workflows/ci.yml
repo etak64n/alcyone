@@ -1,0 +1,86 @@
+# Checks alcyone on every push to main, every pull request, and every release (release.yml
+# calls this workflow before it publishes): the types, the tests, the build, and two people
+# on one board in Chromium.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CF_SEND_TELEMETRY: "false"
+    steps:
+      - uses: actions/checkout@v7
+
+      # Installs the pnpm version that "packageManager" in package.json names.
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # CI has no deployment of its own, so it checks the code with the example settings.
+      - name: Use the example settings
+        run: cp alcyone.config.example.ts alcyone.config.ts
+
+      - run: pnpm typecheck
+
+      - run: pnpm test
+
+      - name: Build
+        run: pnpm exec cf build
+
+  # alcyone under cf dev, with its local bucket and without Access, as on the machine of a
+  # developer. Two tabs edit one board, and the screenshots stay with the run.
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CF_SEND_TELEMETRY: "false"
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            test/browser/pnpm-lock.yaml
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: pnpm --dir test/browser install --frozen-lockfile
+
+      - run: pnpm --dir test/browser exec playwright install --with-deps chromium
+
+      # Japanese notes in the screenshots need a font that has Japanese.
+      - name: Install Noto Sans CJK
+        run: sudo apt-get update && sudo apt-get install --yes --no-install-recommends fonts-noto-cjk
+
+      - name: Use the example settings
+        run: cp alcyone.config.example.ts alcyone.config.ts
+
+      - run: ./test/browser/run.sh
+
+      - uses: actions/upload-artifact@v7
+        if: ${{ !cancelled() }}
+        with:
+          name: screenshots
+          path: test/browser/out/
+          if-no-files-found: ignore
+          retention-days: 14

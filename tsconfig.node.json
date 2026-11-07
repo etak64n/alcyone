@@ -1,0 +1,33 @@
+{
+  // Files that run in Node.js: configuration, scripts, and tests. The tests also run parts
+  // of the browser app, so the DOM library describes what those parts use.
+  "compilerOptions": {
+    "target": "ES2023",
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true,
+    "allowImportingTsExtensions": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "cloudflare.config.ts",
+    "alcyone.config.ts",
+    "alcyone.config.example.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "config",
+    "stack",
+    "test",
+    "worker/runtime.d.ts"
+  ],
+  "exclude": ["test/browser"]
+}

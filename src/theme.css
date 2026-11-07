@@ -1,0 +1,88 @@
+/* The colors, corners, shadows, and fonts of the pages and of the controls over a board.
+   Light while the device is in light mode, and dark while it is in dark mode. The board
+   itself keeps its light paper in both (src/board/colors.ts). */
+:root {
+  color-scheme: light;
+
+  /* Accent: links, the tool in use, selected choices, and the primary button. */
+  --theme-accent: #2f63e0;
+  --theme-accent-hover: #2552c4;
+  --theme-accent-subtle: #e5ecfc;
+  --theme-on-accent: #ffffff;
+  /* The 4px ring around the part that the keyboard selected. */
+  --theme-focus-ring: rgb(1 150 237 / 0.36);
+
+  /* Text, from the darkest to the lightest. */
+  --theme-text-heading: #30313d;
+  --theme-text-strong: #1a2c44;
+  --theme-text-control: #273951;
+  --theme-text: #414552;
+  --theme-text-label: #3c4f69;
+  --theme-text-subdued: #667691;
+  --theme-text-placeholder: #a3acba;
+
+  /* Surfaces and lines. */
+  --theme-surface: #ffffff;
+  --theme-surface-subdued: #f4f7fa;
+  --theme-surface-hover: #f0f3f7;
+  --theme-border: #d4dee9;
+  --theme-hairline: #ecf1f6;
+
+  /* Status. */
+  --theme-positive: #217005;
+  --theme-critical: #df1b41;
+
+  /* The shade under dialogs. */
+  --theme-scrim: rgb(48 49 61 / 0.5);
+
+  /* Corners, from the smallest: menu items, controls, menus and panels, cards, and dialogs. */
+  --theme-radius-xs: 4px;
+  --theme-radius-sm: 6px;
+  --theme-radius-md: 8px;
+  --theme-radius-lg: 12px;
+  --theme-radius-xl: 16px;
+
+  /* Shadows, only for what floats over the page or the board. */
+  --theme-shadow-tooltip: 0 3px 6px rgb(0 0 0 / 0.12), 0 7px 14px rgb(48 49 61 / 0.08);
+  --theme-shadow-popover: 0 5px 15px rgb(0 0 0 / 0.12), 0 15px 35px rgb(48 49 61 / 0.08);
+
+  /* The system fonts of each OS: Latin first, then Japanese. */
+  --theme-font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, "Hiragino Sans", "Yu Gothic UI", "Meiryo UI",
+    "Hiragino Kaku Gothic ProN", sans-serif;
+  --theme-font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --theme-accent: #7ea2ff;
+    --theme-accent-hover: #98b5ff;
+    --theme-accent-subtle: #1c2a4d;
+    --theme-on-accent: #0b1120;
+    --theme-focus-ring: rgb(56 170 255 / 0.45);
+
+    --theme-text-heading: #f2f5f9;
+    --theme-text-strong: #e6ebf2;
+    --theme-text-control: #d9e1ec;
+    --theme-text: #c3ccd9;
+    --theme-text-label: #aebbcc;
+    --theme-text-subdued: #8796ab;
+    --theme-text-placeholder: #5e6c80;
+
+    --theme-surface: #121926;
+    --theme-surface-subdued: #1a2332;
+    --theme-surface-hover: #1f2939;
+    --theme-border: #2f3b4f;
+    --theme-hairline: #222c3c;
+
+    --theme-positive: #7bd66a;
+    --theme-critical: #ff6b81;
+
+    --theme-scrim: rgb(4 8 16 / 0.7);
+
+    /* A line keeps what floats apart from the dark page. */
+    --theme-shadow-tooltip: 0 0 0 1px #2f3b4f, 0 3px 6px rgb(0 0 0 / 0.4);
+    --theme-shadow-popover: 0 0 0 1px #2f3b4f, 0 5px 15px rgb(0 0 0 / 0.45), 0 15px 35px rgb(0 0 0 / 0.3);
+  }
+}

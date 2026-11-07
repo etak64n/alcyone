@@ -1,0 +1,8 @@
+# Dependencies may run install scripts only when they are listed here.
+allowBuilds:
+  workerd: true
+
+# Supply-chain hardening: skip releases younger than a day, and accept
+# dependencies only from the npm registry.
+minimumReleaseAge: 1440
+blockExoticSubdeps: true

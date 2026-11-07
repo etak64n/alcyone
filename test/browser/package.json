@@ -1,0 +1,9 @@
+{
+  "name": "alcyone-browser-test",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@12.16.1",
+  "dependencies": {
+    "playwright": "1.65.0"
+  }
+}

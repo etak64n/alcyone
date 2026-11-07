@@ -1,0 +1,54 @@
+# Publishes a GitHub release for every tag v*. The tag must be annotated and name the
+# version in package.json, and the commit must pass the checks of CI. The message of
+# the tag becomes the notes of the release: changes reach main as commits rather than
+# pull requests, so notes that GitHub generates would list nothing.
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    uses: ./.github/workflows/ci.yml
+
+  release:
+    needs: check
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag against package.json
+        run: |
+          version=$(jq -r .version package.json)
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "The tag $GITHUB_REF_NAME does not match the version $version in package.json." >&2
+            exit 1
+          fi
+
+      # The checkout points the tag at the commit and leaves out the tag object, which
+      # holds the message. Fetching the tag itself brings the message back.
+      - name: Fetch the message of the tag
+        run: |
+          git fetch --force --no-tags origin "refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          if [ "$(git cat-file -t "refs/tags/$GITHUB_REF_NAME")" != "tag" ]; then
+            echo "The tag $GITHUB_REF_NAME has no message. Tag with git tag -a, and write the notes of the release in the message." >&2
+            exit 1
+          fi
+
+      - name: Publish the release
+        run: gh release create "$GITHUB_REF_NAME" --title "alcyone $GITHUB_REF_NAME" --notes-from-tag --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      # The README updates a deployment with `git checkout latest`, so the tag follows each release.
+      - name: Point the latest tag at this release
+        run: |
+          git tag --force latest "$GITHUB_SHA"
+          git push --force origin refs/tags/latest:refs/tags/latest

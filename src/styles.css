@@ -1,0 +1,92 @@
+@import "tailwindcss";
+/* The enter and leave animations of the menus and the dialogs. */
+@import "tw-animate-css";
+@import "./theme.css";
+
+/* The colors, corners, shadows, and fonts come from theme.css, which sets the --theme-*
+   variables, and the names below turn them into Tailwind utilities. */
+@theme inline {
+  --color-accent: var(--theme-accent);
+  --color-accent-hover: var(--theme-accent-hover);
+  --color-accent-subtle: var(--theme-accent-subtle);
+  --color-on-accent: var(--theme-on-accent);
+  --color-heading: var(--theme-text-heading);
+  --color-strong: var(--theme-text-strong);
+  --color-control: var(--theme-text-control);
+  --color-ink: var(--theme-text);
+  --color-label: var(--theme-text-label);
+  --color-subdued: var(--theme-text-subdued);
+  --color-placeholder: var(--theme-text-placeholder);
+  --color-surface: var(--theme-surface);
+  --color-surface-subdued: var(--theme-surface-subdued);
+  --color-surface-hover: var(--theme-surface-hover);
+  --color-border: var(--theme-border);
+  --color-hairline: var(--theme-hairline);
+  --color-positive: var(--theme-positive);
+  --color-critical: var(--theme-critical);
+  --color-scrim: var(--theme-scrim);
+  --radius-xs: var(--theme-radius-xs);
+  --radius-sm: var(--theme-radius-sm);
+  --radius-md: var(--theme-radius-md);
+  --radius-lg: var(--theme-radius-lg);
+  --radius-xl: var(--theme-radius-xl);
+  --shadow-tooltip: var(--theme-shadow-tooltip);
+  --shadow-popover: var(--theme-shadow-popover);
+  --font-sans: var(--theme-font);
+  --font-mono: var(--theme-font-mono);
+}
+
+/* Text comes in four sizes: 12px (text-xs), 14px (text-sm), 16px (text-base), and 20px
+   (text-figure) for the heading of a page. */
+@theme {
+  --text-figure: 20px;
+  --text-figure--line-height: 28px;
+  --container-content: 1120px;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--theme-surface);
+  color: var(--theme-text);
+  font-family: var(--theme-font);
+  font-size: 14px;
+  line-height: 20px;
+  /* Japanese text breaks lines by its own rules. */
+  line-break: strict;
+}
+
+/* Keyboard focus: a light blue ring of 4px around the part. */
+@layer base {
+  :focus-visible {
+    outline: 4px solid var(--theme-focus-ring);
+    outline-offset: 0;
+  }
+}
+
+/* Decoration stops for people who ask for less motion. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@layer components {
+  /* A text field: as tall as a button, with a line of 1px drawn by a shadow. Fields grow to
+     44px for fingers, with 16px text, which keeps iPhone from zooming in. */
+  .field {
+    @apply h-7 w-full rounded-sm bg-surface px-2 text-sm text-ink shadow-[0_0_0_1px_var(--theme-border)] placeholder:text-placeholder disabled:bg-surface-subdued disabled:text-subdued pointer-coarse:min-h-11 pointer-coarse:text-base;
+  }
+
+  .error-box {
+    @apply rounded-sm bg-critical/10 px-3 py-2 text-sm font-semibold text-critical;
+  }
+
+  /* A panel that floats over the board, such as the tools and the zoom. */
+  .board-panel {
+    @apply rounded-md bg-surface shadow-popover;
+  }
+}

@@ -1,0 +1,20 @@
+node_modules/
+dist/
+.cloudflare/
+.wrangler/
+
+# Settings and secrets of each deployment
+alcyone.config.ts
+.env
+.env.*
+!.env.example
+.dev.vars*
+
+# The browser test: its dependencies, and the screenshots that it takes
+test/browser/node_modules/
+test/browser/out/
+
+# The documentation site: its dependencies, its build, and the types that Astro writes
+docs/node_modules/
+docs/dist/
+.astro/
