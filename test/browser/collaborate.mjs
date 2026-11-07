@@ -87,7 +87,7 @@ try {
   step("A creates a board");
   await a.goto(base);
   await a.getByRole("button", { name: "New board" }).click();
-  await a.getByLabel("Name").fill("Planning");
+  await a.getByRole("textbox", { name: "Name" }).fill("Planning");
   await a.getByRole("button", { name: "Create" }).click();
   await a.waitForURL(/\/boards\/[0-9a-z]{16}$/);
   await a.locator('[data-connection="open"]').waitFor();
@@ -149,7 +149,7 @@ try {
 
   step("A renames the board, and B sees the new name");
   await a.getByRole("button", { name: "Planning" }).click();
-  await a.getByLabel("Name").fill("Roadmap");
+  await a.getByRole("textbox", { name: "Name" }).fill("Roadmap");
   await a.getByRole("button", { name: "Rename" }).click();
   await b.getByText("Roadmap").first().waitFor();
 
